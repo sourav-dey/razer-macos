@@ -71,13 +71,65 @@ void KbdSetModeWave(const Napi::CallbackInfo &info)
   {
     return;
   }
-  if (std::strncmp(info[0].ToString().Utf8Value().c_str(), "left", 4) == 0)
+  std::string waveSettingString = info[0].ToString().Utf8Value();
+  const char* waveSetting = waveSettingString.c_str();
+
+  if (std::strncmp(waveSetting,"left_slowest", 12) == 0)
   {
-    razer_attr_write_mode_wave(kbdDev, "1", 0);
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x90);
   }
-  else
+  else if (std::strncmp(waveSetting,"left_slower", 12) == 0)
   {
-    razer_attr_write_mode_wave(kbdDev, "2", 0);
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x80);
+  }
+  else if (std::strncmp(waveSetting,"left_slow", 12) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x70);
+  }
+  else if (std::strncmp(waveSetting,"left_default", 12) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x55);
+  }
+  else if (std::strncmp(waveSetting,"left_fast", 12) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x40);
+  }
+  else if (std::strncmp(waveSetting,"left_faster", 12) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x25);
+  }
+  else if (std::strncmp(waveSetting,"left_fastest", 12) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "1", 0, 0x10);
+  }
+// right
+  else if (std::strncmp(waveSetting,"right_slowest", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x90);
+  }
+  else if (std::strncmp(waveSetting,"right_slower", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x80);
+  }
+  else if (std::strncmp(waveSetting,"right_slow", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x70);
+  }
+  else if (std::strncmp(waveSetting,"right_default", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x55);
+  }
+  else if (std::strncmp(waveSetting,"right_fast", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x40);
+  }
+  else if (std::strncmp(waveSetting,"right_faster", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x25);
+  }
+  else if (std::strncmp(waveSetting,"right_fastest", 13) == 0)
+  {
+    razer_attr_write_mode_wave(kbdDev, "2", 0, 0x10);
   }
 }
 
@@ -167,6 +219,35 @@ void KbdSetModeBreathe(const Napi::CallbackInfo &info)
   char *buf = (char *)info[0].As<Napi::Uint8Array>().Data();
 
   razer_attr_write_mode_breath(kbdDev, buf, 1);
+}
+
+Napi::Number KbdGetBrightness(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  // Return -1 if no device
+  if (kbdDev == NULL)
+  {
+    return Napi::Number::New(env, -1);
+  }
+
+  ushort brightness = razer_attr_read_set_brightness(kbdDev);
+
+  return Napi::Number::New(env, brightness);
+}
+
+void KbdSetBrightness(const Napi::CallbackInfo &info)
+{
+  if (kbdDev == NULL)
+  {
+    return;
+  }
+
+  Napi::Number brightness_number = info[0].ToNumber();
+  
+  ushort brightness = brightness_number.Int32Value();
+
+  razer_attr_write_set_brightness(kbdDev, brightness, 1);
 }
 
 void KbdSetModeStarlight(const Napi::CallbackInfo &info)
@@ -261,23 +342,28 @@ void MouseSetLogoLEDEffect(const Napi::CallbackInfo &info)
   {
     return;
   }
-  const char *effect = info[0].ToString().Utf8Value().c_str();
-
+  std::string effectString = info[0].ToString().Utf8Value();
+  const char* effect = effectString.c_str();
+    
   if (std::strncmp(effect, "static", 6) == 0)
   {
     razer_attr_write_logo_led_effect(mouseDev, "0", 1);
+    razer_attr_write_scroll_led_effect(mouseDev, "0", 1);
   }
   else if (std::strncmp(effect, "blinking", 8) == 0)
   {
     razer_attr_write_logo_led_effect(mouseDev, "1", 1);
+    razer_attr_write_scroll_led_effect(mouseDev, "1", 1);
   }
   else if (std::strncmp(effect, "pulsate", 7) == 0)
   {
     razer_attr_write_logo_led_effect(mouseDev, "2", 1);
+    razer_attr_write_scroll_led_effect(mouseDev, "2", 1);
   }
   else if (std::strncmp(effect, "scroll", 6) == 0)
   {
     razer_attr_write_logo_led_effect(mouseDev, "4", 1);
+    razer_attr_write_scroll_led_effect(mouseDev, "4", 1);
   }
 }
 
@@ -886,6 +972,15 @@ void HeadphoneSetModeNone(const Napi::CallbackInfo &info)
     razer_headphone_attr_write_mode_none(headphoneDev, "1", 1);
 }
 
+void HeadphoneSetModeSpectrum(const Napi::CallbackInfo &info)
+{
+    if (headphoneDev == NULL)
+    {
+        return;
+    }
+    razer_headphone_attr_write_mode_spectrum(headphoneDev, "1", 1);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getKeyboardDevice", Napi::Function::New(env, GetKeyboardDevice));
   exports.Set("closeKeyboardDevice", Napi::Function::New(env, CloseKeyboardDevice));
@@ -896,6 +991,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("kbdSetModeWave", Napi::Function::New(env, KbdSetModeWave));
   exports.Set("kbdSetModeReactive", Napi::Function::New(env, KbdSetModeReactive));
   exports.Set("kbdSetModeBreathe", Napi::Function::New(env, KbdSetModeBreathe));
+  exports.Set("KbdGetBrightness", Napi::Function::New(env, KbdGetBrightness));
+  exports.Set("KbdSetBrightness", Napi::Function::New(env, KbdSetBrightness));
   exports.Set("kbdSetModeStarlight", Napi::Function::New(env, KbdSetModeStarlight));
 
   exports.Set("getMouseDevice", Napi::Function::New(env, GetMouseDevice));
@@ -951,6 +1048,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("headphoneSetModeBreathe", Napi::Function::New(env, HeadphoneSetModeBreathe));
   exports.Set("headphoneSetModeStatic", Napi::Function::New(env, HeadphoneSetModeStatic));
   exports.Set("headphoneSetModeStaticNoStore", Napi::Function::New(env, HeadphoneSetModeStaticNoStore));
+  exports.Set("headphoneSetModeSpectrum", Napi::Function::New(env, HeadphoneSetModeSpectrum));
 
   return exports;
 }

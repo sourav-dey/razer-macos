@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "razerchromacommon.h"
 
 
@@ -178,7 +180,7 @@ struct razer_report razer_chroma_standard_get_led_effect(unsigned char variable_
  * Status Trans Packet Proto DataSize Class CMD Args
  * ? TODO fill this
  */
-struct razer_report razer_chroma_standard_set_led_brightness(unsigned char variable_storage, unsigned char led_id, unsigned char brightness)
+struct razer_report razer_chroma_standard_set_led_brightness(unsigned char variable_storage, unsigned char led_id, ushort brightness)
 {
     struct razer_report report = get_razer_report(0x03, 0x03, 0x03);
     report.arguments[0] = variable_storage;
@@ -542,7 +544,7 @@ struct razer_report razer_chroma_extended_matrix_effect_static(unsigned char var
  * 00     3f    0000   00    06       0f    02  010504002800 | SET LED MATRIX Effect (VARSTR, Backlight, Wave 0x04, Dir 0x00, ? 0x2800)
  * 00     3f    0000   00    06       0f    02  010504012800 | SET LED MATRIX Effect (VARSTR, Backlight, Wave 0x04, Dir 0x01, ? 0x2800)
  */
-struct razer_report razer_chroma_extended_matrix_effect_wave(unsigned char variable_storage, unsigned char led_id, unsigned char direction)
+struct razer_report razer_chroma_extended_matrix_effect_wave(unsigned char variable_storage, unsigned char led_id, unsigned char direction, int speed)
 {
     struct razer_report report = razer_chroma_extended_matrix_effect_base(0x06, variable_storage, led_id, 0x04);
 
@@ -551,7 +553,7 @@ struct razer_report razer_chroma_extended_matrix_effect_wave(unsigned char varia
     direction = clamp_u8(direction, 0x00, 0x02);
 
     report.arguments[3] = direction;
-    report.arguments[4] = 0x28; // Unknown
+    report.arguments[4] = speed; // Speed, lower values are faster (). The default used to be 0x28
     return report;
 }
 
@@ -710,7 +712,7 @@ struct razer_report razer_chroma_extended_matrix_brightness(unsigned char variab
 
     report.arguments[0] = variable_storage;
     report.arguments[1] = led_id;
-    report.arguments[2] = brightness;
+    report.arguments[2] = round(brightness * 2.55); //Razer macOS special: brightness is coming [0-100], matrix brightness range is from [0-255] though
 
     return report;
 }

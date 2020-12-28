@@ -41,6 +41,7 @@
 #define USB_DEVICE_ID_RAZER_BLACKWIDOW_X_CHROMA_TE 0x021A
 #define USB_DEVICE_ID_RAZER_ORNATA_CHROMA 0x021E
 #define USB_DEVICE_ID_RAZER_ORNATA 0x021F
+#define USB_DEVICE_ID_RAZER_ORNATA_V2 0x025D
 #define USB_DEVICE_ID_RAZER_BLADE_STEALTH_LATE_2016 0x0220
 #define USB_DEVICE_ID_RAZER_BLACKWIDOW_CHROMA_V2 0x0221
 #define USB_DEVICE_ID_RAZER_BLADE_LATE_2016 0x0224
@@ -137,7 +138,7 @@ ssize_t razer_attr_read_tartarus_profile_led_green(IOUSBDeviceInterface **usb_de
 ssize_t razer_attr_read_tartarus_profile_led_blue(IOUSBDeviceInterface **usb_dev, char *buf);
 ssize_t razer_attr_read_get_firmware_version(IOUSBDeviceInterface **usb_dev, char *buf);
 ssize_t razer_attr_write_mode_none(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
-ssize_t razer_attr_write_mode_wave(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
+ssize_t razer_attr_write_mode_wave(IOUSBDeviceInterface **usb_dev, const char *buf, int count, int speed);
 ssize_t razer_attr_write_mode_spectrum(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
 ssize_t razer_attr_write_mode_reactive(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
 ssize_t razer_attr_write_mode_static(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
@@ -148,7 +149,7 @@ ssize_t razer_attr_read_set_logo(IOUSBDeviceInterface **usb_dev, char *buf, int 
 ssize_t razer_attr_write_set_logo(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
 ssize_t razer_attr_write_mode_custom(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
 ssize_t razer_attr_write_set_fn_toggle(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
-ssize_t razer_attr_write_set_brightness(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
-ssize_t razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev, char *buf);
+ssize_t razer_attr_write_set_brightness(IOUSBDeviceInterface **usb_dev, ushort brightness, int count);
+ushort razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev);
 ssize_t razer_attr_write_matrix_custom_frame(IOUSBDeviceInterface **usb_dev, const char *buf, int count);
 #endif

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "razerkbd_driver.h"
 #include "razerchromacommon.h"
@@ -52,8 +53,6 @@ bool is_blade_laptop(IOUSBDeviceInterface **usb_dev)
     case USB_DEVICE_ID_RAZER_BLADE_PRO_2017_FULLHD:
     case USB_DEVICE_ID_RAZER_BLADE_2019_BASE:
     case USB_DEVICE_ID_RAZER_BLADE_STEALTH_LATE_2019:
-    case USB_DEVICE_ID_RAZER_CYNOSA_V2:
-    case USB_DEVICE_ID_RAZER_CYNOSA_LITE:
         return true;
     }
 
@@ -240,6 +239,10 @@ ssize_t razer_attr_read_device_type(IOUSBDeviceInterface **usb_dev, char *buf)
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
         device_type = "Razer Ornata Chroma\n";
         break;
+            
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
+        device_type = "Razer Ornata V2\n";
+        break;
 
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
         device_type = "Razer Huntsman Elite\n";
@@ -333,6 +336,7 @@ ssize_t razer_attr_write_mode_macro_effect(IOUSBDeviceInterface **usb_dev, const
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_LITE:
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -490,6 +494,7 @@ ssize_t razer_attr_write_mode_none(IOUSBDeviceInterface **usb_dev, const char *b
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_LITE:
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -534,7 +539,7 @@ ssize_t razer_attr_write_mode_none(IOUSBDeviceInterface **usb_dev, const char *b
  *
  * For the extended its 0x00 and 0x01
  */
-ssize_t razer_attr_write_mode_wave(IOUSBDeviceInterface **usb_dev, const char *buf, int count)
+ssize_t razer_attr_write_mode_wave(IOUSBDeviceInterface **usb_dev, const char *buf, int count, int speed)
 {
     unsigned char direction = (unsigned char)strtol(buf, NULL, 10);
     struct razer_report report;
@@ -546,13 +551,14 @@ ssize_t razer_attr_write_mode_wave(IOUSBDeviceInterface **usb_dev, const char *b
     {
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
     case USB_DEVICE_ID_RAZER_HUNTSMAN:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_ESSENTIAL:
     case USB_DEVICE_ID_RAZER_CYNOSA_CHROMA:
-        report = razer_chroma_extended_matrix_effect_wave(VARSTORE, BACKLIGHT_LED, direction);
+        report = razer_chroma_extended_matrix_effect_wave(VARSTORE, BACKLIGHT_LED, direction, speed);
         break;
 
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_CHROMA_V2:
@@ -563,7 +569,7 @@ ssize_t razer_attr_write_mode_wave(IOUSBDeviceInterface **usb_dev, const char *b
     case USB_DEVICE_ID_RAZER_TARTARUS_V2:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_ELITE:
     case USB_DEVICE_ID_RAZER_CYNOSA_V2:
-        report = razer_chroma_extended_matrix_effect_wave(VARSTORE, BACKLIGHT_LED, direction);
+        report = razer_chroma_extended_matrix_effect_wave(VARSTORE, BACKLIGHT_LED, direction, speed);
         report.transaction_id.id = 0x1F;
         break;
 
@@ -592,6 +598,7 @@ ssize_t razer_attr_write_mode_spectrum(IOUSBDeviceInterface **usb_dev, const cha
     {
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -653,6 +660,7 @@ ssize_t razer_attr_write_mode_reactive(IOUSBDeviceInterface **usb_dev, const cha
         {
         case USB_DEVICE_ID_RAZER_ORNATA:
         case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+        case USB_DEVICE_ID_RAZER_ORNATA_V2:
         case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
         case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
         case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -777,6 +785,7 @@ ssize_t razer_attr_write_mode_static(IOUSBDeviceInterface **usb_dev, const char 
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_LITE:
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -924,6 +933,7 @@ ssize_t razer_attr_write_mode_static_no_store(IOUSBDeviceInterface **usb_dev, co
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_LITE:
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -1010,6 +1020,7 @@ ssize_t razer_attr_write_mode_starlight(IOUSBDeviceInterface **usb_dev, const ch
         break;
 
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -1173,6 +1184,7 @@ ssize_t razer_attr_write_mode_breath(IOUSBDeviceInterface **usb_dev, const char 
         break;
 
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -1414,9 +1426,8 @@ ssize_t razer_attr_write_set_fn_toggle(IOUSBDeviceInterface **usb_dev, const cha
  *
  * Sets the brightness to the ASCII number written to this file.
  */
-ssize_t razer_attr_write_set_brightness(IOUSBDeviceInterface **usb_dev, const char *buf, int count)
+ssize_t razer_attr_write_set_brightness(IOUSBDeviceInterface **usb_dev, ushort brightness, int count)
 {
-    unsigned char brightness = (unsigned char)strtol(buf, NULL, 10);
     struct razer_report report = {0};
 
     UInt16 product = -1;
@@ -1433,6 +1444,7 @@ ssize_t razer_attr_write_set_brightness(IOUSBDeviceInterface **usb_dev, const ch
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_LITE:
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -1478,8 +1490,9 @@ ssize_t razer_attr_write_set_brightness(IOUSBDeviceInterface **usb_dev, const ch
  *
  * Returns a string
  */
-ssize_t razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev, char *buf)
+ushort razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev)
 {
+    bool is_matrix_brightness = false;
     unsigned char brightness = 0;
     struct razer_report report = {0};
     struct razer_report response = {0};
@@ -1493,11 +1506,13 @@ ssize_t razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev, char *buf
     case USB_DEVICE_ID_RAZER_TARTARUS_V2:
         report = razer_chroma_extended_matrix_get_brightness(VARSTORE, ZERO_LED);
         report.transaction_id.id = 0x1F;
+        is_matrix_brightness = true;
         break;
 
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_LITE:
     case USB_DEVICE_ID_RAZER_ORNATA:
     case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_2019:
@@ -1506,11 +1521,14 @@ ssize_t razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev, char *buf
     case USB_DEVICE_ID_RAZER_CYNOSA_CHROMA:
     case USB_DEVICE_ID_RAZER_CYNOSA_LITE:
         report = razer_chroma_extended_matrix_get_brightness(VARSTORE, BACKLIGHT_LED);
+        is_matrix_brightness = true;
         break;
 
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_ELITE:
+    case USB_DEVICE_ID_RAZER_CYNOSA_V2:
         report = razer_chroma_extended_matrix_get_brightness(VARSTORE, BACKLIGHT_LED);
         report.transaction_id.id = 0x1F;
+        is_matrix_brightness = true;
         break;
 
     case USB_DEVICE_ID_RAZER_BLACKWIDOW_STEALTH:
@@ -1545,7 +1563,13 @@ ssize_t razer_attr_read_set_brightness(IOUSBDeviceInterface **usb_dev, char *buf
         brightness = response.arguments[2];
     }
 
-    return sprintf(buf, "%d\n", brightness);
+    if(is_matrix_brightness) {
+        brightness = round(brightness / 2.55);
+    }
+
+    printf("Current keyboard brightness %d\n", brightness);
+
+    return brightness;
 }
 
 /**
@@ -1672,6 +1696,7 @@ static int razer_get_report(IOUSBDeviceInterface **usb_dev, struct razer_report 
     {
     case USB_DEVICE_ID_RAZER_ANANSI:
     case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
+    case USB_DEVICE_ID_RAZER_ORNATA_V2:
         report_index = 0x02;
         response_index = 0x02;
         break;

@@ -45,6 +45,7 @@ bool is_keyboard(IOUSBDeviceInterface **usb_dev)
 	case USB_DEVICE_ID_RAZER_BLACKWIDOW_ESSENTIAL:
 	case USB_DEVICE_ID_RAZER_ORNATA:
 	case USB_DEVICE_ID_RAZER_ORNATA_CHROMA:
+	case USB_DEVICE_ID_RAZER_ORNATA_V2:
 	case USB_DEVICE_ID_RAZER_HUNTSMAN_ELITE:
 	case USB_DEVICE_ID_RAZER_HUNTSMAN_TE:
 	case USB_DEVICE_ID_RAZER_BLACKWIDOW_ELITE:
@@ -52,6 +53,8 @@ bool is_keyboard(IOUSBDeviceInterface **usb_dev)
 	case USB_DEVICE_ID_RAZER_CYNOSA_CHROMA:
 	case USB_DEVICE_ID_RAZER_BLACKWIDOW_CHROMA_V2:
 	case USB_DEVICE_ID_RAZER_ANANSI:
+	case USB_DEVICE_ID_RAZER_CYNOSA_V2:
+	case USB_DEVICE_ID_RAZER_CYNOSA_LITE:
 		return true;
 	}
 
@@ -175,6 +178,7 @@ bool is_headphone(IOUSBDeviceInterface **usb_dev)
     switch (product) 
     {
         case USB_DEVICE_ID_RAZER_KRAKEN_KITTY_EDITION:
+        case USB_DEVICE_ID_RAZER_KRAKEN_V2:
             return true;
     }
 
